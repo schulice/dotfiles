@@ -1,3 +1,6 @@
+# ZSH profile
+
+# @p10k
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -5,22 +8,44 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # If you're using macOS, you'll want this enabled
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+# @Env
+export EDITOR="nvim"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	## MacOS
+	### env
+	if [[ -f "/opt/homebrew/bin/brew" ]] && ! [[ -v $HOMEBREW_PREFIX ]] then
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+	fi
+	[ -f "/Users/chenzaixi/.ghcup/env" ] && . "/Users/chenzaixi/.ghcup/env" # ghcup-env
+	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+	alias ls="ls --color"
+	alias vim='nvim'
+	if [ ! -z $KITTY_PID ]; then
+		alias ssh="kitten ssh"
+	fi
+	export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
+	PATH="$HOME/.local/bin:$PATH"
+	export PATH
+	eval "$(fzf --zsh)"
+	eval "$(zoxide init --cmd cd zsh)"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+	## Linux
+	alias ls='ls --color'
+	alias vim='nvim'
+	alias c='clear'
+	PATH="$HOME/.local/bin:$PATH"
+	PATH="$HOME/.cargo/bin:$PATH"
+	PATH="$HOME/go/bin:$PATH"
+	#PATH="$HOME/opt/qemu-7.2.12/bin:$PATH"
+	export PATH
+	eval "$(fzf --zsh)"
+	eval "$(zoxide init --cmd cd zsh)"
+	eval "$(direnv hook zsh)"
+else
+## other system
 fi
 
-# @Variables
-export EDITOR=/usr/bin/nvim
-
-# @PATH
-## \rust
-PATH=$HOME/.cargo/bin:$PATH
-## \go
-PATH=$HOME/go/bin:$PATH
-## \qemu 7.2.12
-#PATH=$HOME/opt/qemu-7.2.12/bin:$PATH
-export PATH
 
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -87,17 +112,7 @@ zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
-# Aliases
-alias ls='ls --color'
-alias vim='nvim'
-alias c='clear'
-
-# Shell integrations
-eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
-eval "$(direnv hook zsh)"
-
-# @help function
+# @Function
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
@@ -106,3 +121,17 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+function ssh-tmux() {
+  ssh "$1" -t -- "/bin/sh -c 'if tmux has-session 2>/dev/null; then exec tmux attach; else exec tmux; fi'"
+}
+
+# @Mess
+# pnpm
+export PNPM_HOME="/Users/chenzaixi/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
