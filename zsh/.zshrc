@@ -19,7 +19,7 @@ PATH=$HOME/.cargo/bin:$PATH
 ## \go
 PATH=$HOME/go/bin:$PATH
 ## \qemu 7.2.12
-PATH=$HOME/opt/qemu-7.2.12/bin:$PATH
+#PATH=$HOME/opt/qemu-7.2.12/bin:$PATH
 export PATH
 
 # Set the directory we want to store zinit and plugins
@@ -95,6 +95,7 @@ alias c='clear'
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
+eval "$(direnv hook zsh)"
 
 # @help function
 function y() {
