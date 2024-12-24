@@ -13,7 +13,6 @@ delete:
 .PHONY: pull
 pull:
 	@sh -c '\
-	git fetch origin master &&\
 	git pull origin master\
 	'
 
