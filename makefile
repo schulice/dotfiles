@@ -17,6 +17,8 @@ pull:
 
 .PHONY: push
 push:
-	git add -A
-	git commit -m "auto: update"
-	git push origin master
+	@sh -c '\
+	git add -A &&\
+	git commit -m "auto: update" &&\
+	git push origin master\
+	'
