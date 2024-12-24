@@ -12,8 +12,10 @@ delete:
 
 .PHONY: pull
 pull:
-	git fetch origin master
-	git pull origin master
+	@sh -c '\
+	git fetch origin master &&\
+	git pull origin master\
+	'
 
 .PHONY: push
 push:
