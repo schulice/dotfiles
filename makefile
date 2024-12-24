@@ -10,6 +10,11 @@ show:
 delete:
 	stow --verbose --target=$$HOME --delete */
 
+.PHONY: pull
+pull:
+	git fetch origin master
+	git pull origin master
+
 .PHONY: push
 push:
 	git add -A
