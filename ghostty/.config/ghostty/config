@@ -1,0 +1,13 @@
+
+# Fonts
+font-size = 14
+theme = light:AtomOneLight,dark:Atom
+
+# Windows
+confirm-close-surface = false
+quit-after-last-window-closed = false
+
+# Quick Term
+keybind = global:alt+space=toggle_quick_terminal
+quick-terminal-screen = mouse
+quick-terminal-autohide = false
