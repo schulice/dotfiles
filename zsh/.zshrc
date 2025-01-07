@@ -126,6 +126,16 @@ function proxy-stop() {
   unset HTTPS_PROXY=
 }
 
+# headless
+function nvim-server() {
+  nvim --headless --listen "0.0.0.0:$1"
+}
+
+# attach
+function nvim-attach() {
+  nvim --remote-ui --server "$1:$2"
+}
+
 # @Mess
 # pnpm
 export PNPM_HOME="/Users/chenzaixi/Library/pnpm"
