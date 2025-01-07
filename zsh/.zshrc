@@ -126,6 +126,16 @@ function ssh-tmux() {
   ssh "$1" -t -- "/bin/sh -c 'if tmux has-session 2>/dev/null; then exec tmux attach; else exec tmux; fi'"
 }
 
+# headless
+function nvim-server() {
+  nvim --headless --listen "0.0.0.0:$1"
+}
+
+# attach
+function nvim-attach() {
+  nvim --remote-ui --server "$1:$2"
+}
+
 # @Mess
 # pnpm
 export PNPM_HOME="/Users/chenzaixi/Library/pnpm"
