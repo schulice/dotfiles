@@ -131,9 +131,17 @@ function nvim-server() {
   nvim --headless --listen "0.0.0.0:$1"
 }
 
-# attach
 function nvim-attach() {
   nvim --remote-ui --server "$1:$2"
+}
+
+function ssh-nvim-listen() {
+  ssh -L 16666:localhost:16666 "$1" nvim --headless --listen localhost:16666
+}
+
+# attach
+function ssh-nvim-attach() {
+  nvim --remote-ui --server "localhost:16666"
 }
 
 # @Mess
