@@ -1,7 +1,7 @@
 
 # Fonts
 font-size = 14
-theme = light:AtomOneLight,dark:Atom
+theme = light:AtomOneLight,dark:tokyonight
 
 # Windows
 confirm-close-surface = false

@@ -14,21 +14,19 @@ export EDITOR="nvim"
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	## MacOS
 	### env
-	if [[ -f "/opt/homebrew/bin/brew" ]] && ! [[ -v $HOMEBREW_PREFIX ]] then
-		eval "$(/opt/homebrew/bin/brew shellenv)"
-	fi
+	[ -f "/opt/homebrew/bin/brew" ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 	[ -f "/Users/chenzaixi/.ghcup/env" ] && . "/Users/chenzaixi/.ghcup/env" # ghcup-env
+	export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
+	PATH="$HOME/.local/bin:$PATH"
+	PATH="/opt/homebrew/opt/libpq/bin:$PATH" # pq
+	export PATH
 	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 	alias ls="ls --color"
 	alias vim='nvim'
-	if [ ! -z $KITTY_PID ]; then
-		alias ssh="kitten ssh"
-	fi
-	export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
-	PATH="$HOME/.local/bin:$PATH"
-	export PATH
+	[ ! -z $KITTY_PID ] && alias ssh="kitten ssh"
 	eval "$(fzf --zsh)"
 	eval "$(zoxide init --cmd cd zsh)"
+
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 	## Linux
 	alias ls='ls --color'
@@ -67,16 +65,6 @@ zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
-
-# Add in snippets
-# zinit snippet OMZL::git.zsh
-# zinit snippet OMZP::git
-# zinit snippet OMZP::sudo
-# zinit snippet OMZP::archlinux
-# zinit snippet OMZP::aws
-# zinit snippet OMZP::kubectl
-# zinit snippet OMZP::kubectx
-# zinit snippet OMZP::command-not-found
 
 # Load completions
 autoload -Uz compinit && compinit
@@ -124,6 +112,18 @@ function y() {
 
 function ssh-tmux() {
   ssh "$1" -t -- "/bin/sh -c 'if tmux has-session 2>/dev/null; then exec tmux attach; else exec tmux; fi'"
+}
+
+function proxy-clash() {
+  export ALL_PROXY=http://127.0.0.1:7897
+  export HTTP_PROXY=http://127.0.0.1:7897
+  export HTTPS_PROXY=http://127.0.0.1:7897
+}
+
+function proxy-stop() {
+  unset ALL_PROXY=
+  unset HTTP_PROXY=
+  unset HTTPS_PROXY=
 }
 
 # @Mess
