@@ -17,9 +17,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	[ -f "/opt/homebrew/bin/brew" ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 	[ -f "/Users/chenzaixi/.ghcup/env" ] && . "/Users/chenzaixi/.ghcup/env" # ghcup-env
 	export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
-	PATH="$HOME/.local/bin:$PATH"
 	PATH="/opt/homebrew/opt/libpq/bin:$PATH" # pq
-	export PATH
+  PATH="/opt/homebrew/opt/riscv-gnu-toolchain/bin$PATH"
+  PATH="/opt/homebrew/opt/binutils/bin:$PATH"
 	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 	alias ls="ls --color"
 	alias vim='nvim'
@@ -32,17 +32,19 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 	alias ls='ls --color'
 	alias vim='nvim'
 	alias c='clear'
-	PATH="$HOME/.local/bin:$PATH"
-	PATH="$HOME/.cargo/bin:$PATH"
-	PATH="$HOME/go/bin:$PATH"
 	#PATH="$HOME/opt/qemu-7.2.12/bin:$PATH"
-	export PATH
 	eval "$(fzf --zsh)"
 	eval "$(zoxide init --cmd cd zsh)"
 	eval "$(direnv hook zsh)"
 else
 ## other system
 fi
+
+# toolchain binary
+[ -d "$HOME/go/bin" ] && PATH="$HOME/go/bin:$PATH"
+[ -d "$HOME/.cargo/bin" ] && PATH="$HOME/.cargo/bin:$PATH"
+[ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
+export PATH
 
 
 # Set the directory we want to store zinit and plugins
@@ -115,9 +117,9 @@ function ssh-tmux() {
 }
 
 function proxy-clash() {
-  export ALL_PROXY=http://127.0.0.1:7897
-  export HTTP_PROXY=http://127.0.0.1:7897
-  export HTTPS_PROXY=http://127.0.0.1:7897
+  export ALL_PROXY="http://127.0.0.1:7897"
+  export HTTP_PROXY="http://127.0.0.1:7897"
+  export HTTPS_PROXY="http://127.0.0.1:7897"
 }
 
 function proxy-stop() {
