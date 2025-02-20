@@ -22,7 +22,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   PATH="/opt/homebrew/opt/binutils/bin:$PATH"
 	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 	alias ls="ls --color"
-	alias vim='nvim'
 	[ ! -z $KITTY_PID ] && alias ssh="kitten ssh"
 	eval "$(fzf --zsh)"
 	eval "$(zoxide init --cmd cd zsh)"
@@ -30,8 +29,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 	## Linux
 	alias ls='ls --color'
-	alias vim='nvim'
-	alias c='clear'
 	#PATH="$HOME/opt/qemu-7.2.12/bin:$PATH"
 	eval "$(fzf --zsh)"
 	eval "$(zoxide init --cmd cd zsh)"
