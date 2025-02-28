@@ -1,6 +1,14 @@
 # Fonts
+# font-family = "JetBrains Mono"
 font-size = 14
-theme = light:AtomOneLight,dark:Monokai Classic
+theme = light:AtomOneLight,dark:AtomOneDark
+
+# Term
+term = xterm-256color
+
+# Shell
+cursor-style = block
+cursor-style-blink = false
 
 # Windows
 confirm-close-surface = false

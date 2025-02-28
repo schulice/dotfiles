@@ -110,7 +110,34 @@ function y() {
 }
 
 function ssh-tmux() {
+  if [ "$#" -ne "1" ]; then
+    echo "Usage: <command> <ssh_host> <session_name>"
+    return 1
+  fi
   ssh "$1" -t -- "/bin/sh -c 'if tmux has-session 2>/dev/null; then exec tmux attach; else exec tmux; fi'"
+}
+
+function ssh-tmux-into() {
+  if [ "$#" -ne "2" ]; then
+    echo "Usage: <command> <ssh_host> <session_name>"
+    return 1
+  fi
+  SSH_HOST="$1"
+  SESSION_NAME="$2"
+  ssh "$SSH_HOST" -t -- "/bin/sh -c 'if tmux has-session -t $SESSION_NAME 2>/dev/null; then exec tmux attach-session -t $SESSION_NAME; else exec tmux new-session -s $SESSION_NAME; fi'"
+}
+
+function tmux-into() {
+  if [ -z "$1" ]; then
+    echo "Usage: <command> <session_name>"
+    return 1
+  fi
+  SESSION_NAME="$1"
+  if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+    tmux attach -t "$SESSION_NAME"
+  else
+    tmux new-session -s "$SESSION_NAME"
+  fi
 }
 
 function proxy-clash() {
