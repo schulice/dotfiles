@@ -22,6 +22,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   PATH="/opt/homebrew/opt/binutils/bin:$PATH"
 	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 	alias ls="ls --color"
+  alias em="emacsclient -t -a ''"
 	[ ! -z $KITTY_PID ] && alias ssh="kitten ssh"
 	eval "$(fzf --zsh)"
 	eval "$(zoxide init --cmd cd zsh)"
@@ -147,9 +148,9 @@ function proxy-clash() {
 }
 
 function proxy-stop() {
-  unset ALL_PROXY=
-  unset HTTP_PROXY=
-  unset HTTPS_PROXY=
+  unset ALL_PROXY
+  unset HTTP_PROXY
+  unset HTTPS_PROXY
 }
 
 # headless
@@ -168,6 +169,16 @@ function ssh-nvim-listen() {
 # attach
 function ssh-nvim-attach() {
   nvim --remote-ui --server "localhost:16666"
+}
+
+function cpp_test() {
+  if [ -z "$1" ]; then
+    echo "Usage <command> <file_name>"
+    return 1
+  fi
+  FILE_NAME="$1"
+  FLAGS="-O2 -std=c++26 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Werror"
+  g++ "$FLAGS" "$FILE_NAME" -o a.out && ./a.out
 }
 
 # @Mess

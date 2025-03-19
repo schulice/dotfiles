@@ -1,10 +1,14 @@
 # Fonts
 # font-family = "JetBrains Mono"
+# font-family = "IBM Plex Mono"
+# font-family = "方正新书宋_GBK"
+# font-family = "方正兰亭黑 Pro Global"
 font-size = 14
 theme = light:AtomOneLight,dark:AtomOneDark
 
 # Term
 term = xterm-256color
+mouse-hide-while-typing = true
 
 # Shell
 cursor-style = block
@@ -13,6 +17,7 @@ cursor-style-blink = false
 # Windows
 confirm-close-surface = false
 quit-after-last-window-closed = false
+window-save-state = always
 
 # Quick Term
 keybind = global:alt+space=toggle_quick_terminal
