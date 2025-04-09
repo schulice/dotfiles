@@ -12,20 +12,33 @@ fi
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 #@Config Fuction
-path_push_front() {
+function path_push_front() {
   case ":$PATH:" in
     *":$PNPM_HOME:"*) ;;
     *) export PATH="$1:$PATH" ;;
   esac
 }
 
+function check_cli() {
+  local cli_name="$1"
+  if command -v "$cli_name" > /dev/null 2>&1; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # @Previous Funcion
 function cli_integration() {
-  if command -v fd > /dev/null 2>&1; then
+  if check_cli fd; then
     export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
   fi
-	eval "$(fzf --zsh)"
-	eval "$(zoxide init --cmd cd zsh)"
+  if check_cli fzf; then
+    eval "$(fzf --zsh)"
+  fi
+  if check_cli zoxide; then
+    eval "$(zoxide init --cmd cd zsh)"
+  fi
 }
 
 function zinit_initial() {
@@ -75,7 +88,7 @@ function zinit_initial() {
 
 # @Env
 export EDITOR="nvim"
-if command -v direnv > /dev/null 2>&1; then
+if check_cli direnv; then
   eval "$(direnv hook zsh)"
 fi
 
@@ -113,7 +126,9 @@ if [[ $TERM_PROGRAM != "WarpTerminal" ]]; then
   zinit_initial
   cli_integration
 else
-	eval "$(zoxide init --cmd cd zsh)"
+  if check_cli zoxide; then
+    eval "$(zoxide init --cmd cd zsh)"
+  fi
 fi
 
 # @Function
@@ -196,13 +211,4 @@ function cpp_test() {
   FLAGS=(-O2 -std=c++26 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Werror)
   g++ "${FLAGS[@]}" "$FILE_NAME" -o a.out && ./a.out
 }
-
-# @Mess
-# pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
 
