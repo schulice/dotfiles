@@ -104,7 +104,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 	alias ls="ls --color"
   alias em="emacsclient -t -a ''"
-	[ ! -z $KITTY_PID ] && alias ssh="kitten ssh"
   function get_app_id() {
     osascript -e "id of app \"$1\""
   }
@@ -122,6 +121,9 @@ fi
 [ -d "$HOME/.cargo/bin" ] && path_push_front "$HOME/.cargo/bin"
 [ -d "$HOME/.local/bin" ] && path_push_front "$HOME/.local/bin"
 
+# Kitty ssh wrap
+[ ! -z "$KITTY_PUBLIC_KEY" ] && alias ssh="kitten ssh"
+# Warp
 if [[ $TERM_PROGRAM != "WarpTerminal" ]]; then
   zinit_initial
   cli_integration

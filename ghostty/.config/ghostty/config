@@ -4,7 +4,7 @@
 # font-family = "方正新书宋_GBK"
 # font-family = "方正兰亭黑 Pro Global"
 font-size = 14
-theme = light:AtomOneLight,dark:AtomOneDark
+theme = light:ZedOneLight,dark:ZedOneDark
 
 # Term
 term = xterm-256color
@@ -20,7 +20,7 @@ quit-after-last-window-closed = false
 window-save-state = always
 
 # Quick Term
-keybind = global:alt+space=toggle_quick_terminal
+# keybind = global:alt+space=toggle_quick_terminal
 quick-terminal-screen = mouse
 quick-terminal-autohide = false
 quick-terminal-animation-duration = 0
