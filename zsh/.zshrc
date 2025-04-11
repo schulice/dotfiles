@@ -132,7 +132,6 @@ else
     eval "$(zoxide init --cmd cd zsh)"
   fi
 fi
-
 # @Function
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -152,13 +151,13 @@ function ssh-tmux() {
 }
 
 function ssh-tmux-into() {
-  if [ "$#" -ne "2" ]; then
-    echo "Usage: <command> <ssh_host> <session_name>"
+  if [ "$#" -lt "2" ]; then
+    echo "Usage: <command> <ssh_command_args...> <session_name>"
     return 1
   fi
-  SSH_HOST="$1"
-  SESSION_NAME="$2"
-  ssh "$SSH_HOST" -t -- "/bin/sh -c 'if tmux has-session -t $SESSION_NAME 2>/dev/null; then exec tmux attach-session -t $SESSION_NAME; else exec tmux new-session -s $SESSION_NAME; fi'"
+  SESSION_NAME="${!#}"
+  SSH_ARGS=("${@:1:$#-1}")
+  ssh "${SSH_ARGS[@]}" -t -- "/bin/sh -c 'if tmux has-session -t $SESSION_NAME 2>/dev/null; then exec tmux attach-session -t $SESSION_NAME; else exec tmux new-session -s $SESSION_NAME; fi'"
 }
 
 function tmux-into() {
