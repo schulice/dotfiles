@@ -11,6 +11,7 @@ term = xterm-256color
 mouse-hide-while-typing = true
 
 # Shell
+shell-integration = none
 cursor-style = block
 cursor-style-blink = false
 
