@@ -125,8 +125,8 @@ fi
 [ ! -z "$KITTY_PUBLIC_KEY" ] && alias ssh="kitten ssh"
 # Warp
 if [[ $TERM_PROGRAM != "WarpTerminal" ]]; then
-  zinit_initial
   cli_integration
+  zinit_initial
 else
   if check_cli zoxide; then
     eval "$(zoxide init --cmd cd zsh)"
