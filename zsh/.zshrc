@@ -101,6 +101,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   path_push_front "/opt/homebrew/opt/libpq/bin" # pq
   path_push_front "/opt/homebrew/opt/riscv-gnu-toolchain/bin" # riscv
   path_push_front "/opt/homebrew/opt/binutils/bin"
+	# for nvm
 	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 	alias ls="ls --color"
   alias em="emacsclient -t -a ''"
