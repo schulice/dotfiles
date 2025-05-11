@@ -79,7 +79,9 @@ function zsh4humans_conf() {
   # zstyle ':z4h:ssh:*' send-extra-files '~/.nanorc' '~/.env.zsh'
   # z4h install ohmyzsh/ohmyzsh || return
   z4h init || return
-  path=(~/bin $path)
+}
+function zsh4humans_specify() {
+  # path=(~/bin $path)
   export GPG_TTY=$TTY
   z4h source ~/.env.zsh
   z4h bindkey undo Ctrl+/   Shift+Tab  # undo the last command line change
@@ -102,51 +104,6 @@ function zsh4humans_conf() {
   setopt no_auto_menu  # require an extra TAB press to open the completion menu
 }
 
-function zinit_initial() {
-  # Set the directory we want to store zinit and plugins
-  ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-  # Download Zinit, if it's not there yet
-  if [ ! -d "$ZINIT_HOME" ]; then
-    mkdir -p "$(dirname $ZINIT_HOME)"
-    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-  fi
-  # Source/Load zinit
-  source "${ZINIT_HOME}/zinit.zsh"
-  # Add in Powerlevel10k
-  zinit ice depth=1; zinit light romkatv/powerlevel10k
-  # Add in zsh plugins
-  zinit light zsh-users/zsh-syntax-highlighting
-  zinit light zsh-users/zsh-completions
-  zinit light zsh-users/zsh-autosuggestions
-  zinit light Aloxaf/fzf-tab
-  # Load completions
-  autoload -Uz compinit && compinit
-  zinit cdreplay -q
-  # Keybindings
-  bindkey -e
-  bindkey '^p' history-search-backward
-  bindkey '^n' history-search-forward
-  bindkey '^[w' kill-region
-  # History
-  HISTSIZE=5000
-  HISTFILE=~/.zsh_history
-  SAVEHIST=$HISTSIZE
-  HISTDUP=erase
-  setopt appendhistory
-  setopt sharehistory
-  setopt hist_ignore_space
-  setopt hist_ignore_all_dups
-  setopt hist_save_no_dups
-  setopt hist_ignore_dups
-  setopt hist_find_no_dups
-  # Completion styling
-  zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-  zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-  zstyle ':completion:*' menu no
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-}
-
 # @PATH
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PNPM_HOME="$HOME/Library/pnpm"
@@ -164,6 +121,7 @@ fi
 if [[ $TERM_PROGRAM != "WarpTerminal" ]]; then
   # zsh4humans_init
   zsh4humans_conf
+  zsh4humans_specify
   # cli_integration
   # zinit_initial
 else
@@ -177,7 +135,6 @@ fi
 export EDITOR="nvim"
 # Kitty ssh wrap
 [ ! -z "$KITTY_PUBLIC_KEY" ] && alias ssh="kitten ssh"
-
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	## MacOS
 	### env
@@ -191,7 +148,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 	## Linux
 	# alias ls='ls --color'
-	#PATH="$HOME/opt/qemu-7.2.12/bin:$PATH"
+	# PATH="$HOME/opt/qemu-7.2.12/bin:$PATH"
 else
 ## other system
 fi
