@@ -159,6 +159,8 @@ fi
 [ -d "$HOME/.cargo/bin" ] && path_push_front "$HOME/.cargo/bin"
 [ -d "$HOME/.local/bin" ] && path_push_front "$HOME/.local/bin"
 
+# local env
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
 # @Function
 function y() {
