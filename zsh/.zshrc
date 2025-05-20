@@ -90,6 +90,10 @@ function zsh4humans_specify() {
   z4h bindkey z4h-cd-forward Shift+Right  # cd into the next directory
   z4h bindkey z4h-cd-up      Shift+Up     # cd into the parent directory
   z4h bindkey z4h-cd-down    Shift+Down   # cd into a child directory
+  zstyle ':z4h:*' fzf-bindings ctrl-k:up
+  # zstyle ':z4h:fzf-complete' fzf-bindings tab:repeat
+  zstyle ':z4h:fzf-complete' recurse-dirs yes
+  zstyle ':z4h:fzf-complete' fzf-bindings tab:repeat ctrl-k:up
   autoload -Uz zmv
   # Define functions and completions.
   function md() { [[ $# == 1 ]] && mkdir -p -- "$1" && cd -- "$1" }
