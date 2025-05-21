@@ -66,7 +66,9 @@ function zsh4humans_conf() {
   zstyle ':z4h:' auto-update      'no'
   zstyle ':z4h:' auto-update-days '28'
   zstyle ':z4h:bindkey' keyboard  'mac'
-  zstyle ':z4h:' start-tmux       no
+  # two flags can not be open same time
+  #zstyle ':z4h:' start-tmux       no
+  zstyle ':z4h:' propagate-cwd yes
   zstyle ':z4h:' term-shell-integration 'yes'
   zstyle ':z4h:autosuggestions' forward-char 'accept'
   zstyle ':z4h:fzf-complete' recurse-dirs 'no'
@@ -189,9 +191,9 @@ function ssh-tmux-into() {
     echo "Usage: <command> <ssh_command_args...> <session_name>"
     return 1
   fi
-  SESSION_NAME="${!#}"
+  SESSION_NAME="${@:-1}"
   SSH_ARGS=("${@:1:$#-1}")
-  ssh "${SSH_ARGS[@]}" -t -- "/bin/sh -c 'if tmux has-session -t $SESSION_NAME 2>/dev/null; then exec tmux attach-session -t $SESSION_NAME; else exec tmux new-session -s $SESSION_NAME; fi'"
+  ssh "${SSH_ARGS[@]}" -t -- "/bin/sh -c 'if tmux has-session -t \"${SESSION_NAME}\" 2>/dev/null; then exec tmux attach-session -t \"${SESSION_NAME}\"; else exec tmux new-session -s \"${SESSION_NAME}\"; fi'"
 }
 
 function tmux-into() {
