@@ -67,8 +67,8 @@ function zsh4humans_conf() {
   zstyle ':z4h:' auto-update-days '28'
   zstyle ':z4h:bindkey' keyboard  'mac'
   # two flags can not be open same time
-  #zstyle ':z4h:' start-tmux       no
-  zstyle ':z4h:' propagate-cwd yes
+  zstyle ':z4h:' start-tmux       no
+  #zstyle ':z4h:' propagate-cwd yes
   zstyle ':z4h:' term-shell-integration 'yes'
   zstyle ':z4h:autosuggestions' forward-char 'accept'
   zstyle ':z4h:fzf-complete' recurse-dirs 'no'

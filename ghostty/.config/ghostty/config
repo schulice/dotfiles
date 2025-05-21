@@ -6,6 +6,8 @@
 font-size = 14
 theme = light:ZedOneLight,dark:ZedOneDark
 
+command  =  ~/.config/ghostty/tmux.sh
+
 # Term
 term = xterm-256color
 mouse-hide-while-typing = true
