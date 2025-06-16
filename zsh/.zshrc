@@ -142,6 +142,7 @@ fi
 export EDITOR="nvim"
 # Kitty ssh wrap
 [ ! -z "$KITTY_PUBLIC_KEY" ] && alias ssh="kitten ssh"
+command -v lazygit > /dev/null 2>&1 && alias lg="lazygit"
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	## MacOS
 	### env
