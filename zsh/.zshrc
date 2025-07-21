@@ -166,6 +166,7 @@ fi
 [ -d "$HOME/go/bin" ] && path_push_front "$HOME/go/bin"
 [ -d "$HOME/.cargo/bin" ] && path_push_front "$HOME/.cargo/bin"
 [ -d "$HOME/.local/bin" ] && path_push_front "$HOME/.local/bin"
+[ -d "$HOME/.local/share/uv/tools" ] && path_push_front "$HOME/.local/share/uv/tools"
 
 # local env
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
