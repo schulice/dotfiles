@@ -1,12 +1,13 @@
 # Fonts
 # font-family = "JetBrains Mono"
+font-family = "JetBrains Maple Mono"
 # font-family = "IBM Plex Mono"
 # font-family = "方正新书宋_GBK"
 # font-family = "方正兰亭黑 Pro Global"
-font-size = 14
+font-size = 15
 theme = light:ZedOneLight,dark:ZedOneDark
 
-command  =  ~/.config/ghostty/tmux.sh
+# command  =  ~/.config/ghostty/tmux.sh
 
 # Term
 term = xterm-256color
