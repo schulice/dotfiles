@@ -19,97 +19,81 @@ function check_cli() {
 
 # @Previous Funcion
 function cli_integration() {
-  if check_cli fd; then
-    export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
-  fi
-  if check_cli fzf; then
-    eval "$(fzf --zsh)"
-  fi
-  if check_cli zoxide; then
-    eval "$(zoxide init --cmd cd zsh)"
-  fi
-  if check_cli direnv; then
-  eval "$(direnv hook zsh)"
-  fi
+  check_cli "fd" && export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
+  check_cli "fzf" && eval "$(fzf --zsh)"
+  check_cli "zoxide" && eval "$(zoxide init --cmd cd zsh)"
+  check_cli "direnv" && eval "$(direnv hook zsh)"
 }
 
-function zsh4humans_init() {
-  if [ -n "${ZSH_VERSION-}" ]; then
-    : ${ZDOTDIR:=~}
-    setopt no_global_rcs
-    [[ -o no_interactive && -z "${Z4H_BOOTSTRAPPING-}" ]] && return
-    setopt no_rcs
-    unset Z4H_BOOTSTRAPPING
+function zimfw_init() {
+  if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
   fi
-  Z4H_URL="https://raw.githubusercontent.com/romkatv/zsh4humans/v5"
-  : "${Z4H:=${XDG_CACHE_HOME:-$HOME/.cache}/zsh4humans/v5}"
-  umask o-w
-  if [ ! -e "$Z4H"/z4h.zsh ]; then
-    mkdir -p -- "$Z4H" || return
-    >&2 printf '\033[33mz4h\033[0m: fetching \033[4mz4h.zsh\033[0m\n'
-    if command -v curl >/dev/null 2>&1; then
-      curl -fsSL -- "$Z4H_URL"/z4h.zsh >"$Z4H"/z4h.zsh.$$ || return
-    elif command -v wget >/dev/null 2>&1; then
-      wget -O-   -- "$Z4H_URL"/z4h.zsh >"$Z4H"/z4h.zsh.$$ || return
+  # Remove older command from the history if a duplicate is to be added.
+  setopt HIST_IGNORE_ALL_DUPS
+  # Set editor default keymap to emacs (`-e`) or vi (`-v`)
+  bindkey -e
+  # Prompt for spelling correction of commands.
+  #setopt CORRECT
+  # Customize spelling correction prompt.
+  #SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+  # Remove path separator from WORDCHARS.
+  WORDCHARS=${WORDCHARS//[\/]}
+  # Use degit instead of git as the default tool to install and update modules.
+  #zstyle ':zim:zmodule' use 'degit'
+  # Set a custom prefix for the generated aliases. The default prefix is 'G'.
+  #zstyle ':zim:git' aliases-prefix 'g'
+  # Append `../` to your input for each `.` you type after an initial `..`
+  #zstyle ':zim:input' double-dot-expand yes
+  # Set a custom terminal title format using prompt expansion escape sequences.
+  # See http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html#Simple-Prompt-Escapes
+  # If none is provided, the default '%n@%m: %~' is used.
+  #zstyle ':zim:termtitle' format '%1~'
+  # Disable automatic widget re-binding on each precmd. This can be set when
+  # zsh-users/zsh-autosuggestions is the last module in your ~/.zimrc.
+  ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+  # Customize the style that the suggestions are shown with.
+  # See https://github.com/zsh-users/zsh-autosuggestions/blob/master/README.md#suggestion-highlight-style
+  #ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
+  # Set what highlighters will be used.
+  # See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
+  ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+  # Customize the main highlighter styles.
+  # See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters/main.md#how-to-tweak-it
+  #typeset -A ZSH_HIGHLIGHT_STYLES
+  #ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
+  ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
+  # Download zimfw plugin manager if missing.
+  if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
+    if (( ${+commands[curl]} )); then
+      curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
+          https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
     else
-      >&2 printf '\033[33mz4h\033[0m: please install \033[32mcurl\033[0m or \033[32mwget\033[0m\n'
-      return 1
+      mkdir -p ${ZIM_HOME} && wget -nv -O ${ZIM_HOME}/zimfw.zsh \
+          https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
     fi
-    mv -- "$Z4H"/z4h.zsh.$$ "$Z4H"/z4h.zsh || return
   fi
-  . "$Z4H"/z4h.zsh || return
-  setopt rcs
+  # Install missing modules, and update ${ZIM_HOME}/init.zsh if missing or outdated.
+  if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
+    source ${ZIM_HOME}/zimfw.zsh init
+  fi
+  # Initialize modules.
+  source ${ZIM_HOME}/init.zsh
+  # zsh-history-substring-search
+  zmodload -F zsh/terminfo +p:terminfo
+  # Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
+  for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} history-substring-search-up
+  for key ('^[[B' '^N' ${terminfo[kcud1]}) bindkey ${key} history-substring-search-down
+  for key ('k') bindkey -M vicmd ${key} history-substring-search-up
+  for key ('j') bindkey -M vicmd ${key} history-substring-search-down
+  unset key
+  [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 }
 
-function zsh4humans_conf() {
-  # Documentation: https://github.com/romkatv/zsh4humans/blob/v5/README.md.
-  zstyle ':z4h:' auto-update      'no'
-  zstyle ':z4h:' auto-update-days '28'
-  zstyle ':z4h:bindkey' keyboard  'mac'
-  # two flags can not be open same time
-  zstyle ':z4h:' start-tmux       no
-  # zstyle ':z4h:' propagate-cwd yes
-  # zstyle ':z4h:' prompt-at-bottom 'yes'
-  zstyle ':z4h:' term-shell-integration 'yes'
-  zstyle ':z4h:autosuggestions' forward-char 'accept'
-  zstyle ':z4h:fzf-complete' recurse-dirs 'no'
-  # direnv
-  zstyle ':z4h:direnv'         enable 'yes'
-  zstyle ':z4h:direnv:success' notify 'yes'
-  zstyle ':z4h:ssh:*'                   enable 'no'
-  # zstyle ':z4h:ssh:example-hostname1'   enable 'yes'
-  # zstyle ':z4h:ssh:*.example-hostname2' enable 'no'
-  # zstyle ':z4h:ssh:*' send-extra-files '~/.nanorc' '~/.env.zsh'
-  # z4h install ohmyzsh/ohmyzsh || return
-  z4h init || return
-}
-function zsh4humans_specify() {
-  # path=(~/bin $path)
-  export GPG_TTY=$TTY
-  z4h source ~/.env.zsh
-  z4h bindkey undo Ctrl+/   Shift+Tab  # undo the last command line change
-  z4h bindkey redo Option+/            # redo the last undone command line change
-  z4h bindkey z4h-cd-back    Shift+Left   # cd into the previous directory
-  z4h bindkey z4h-cd-forward Shift+Right  # cd into the next directory
-  z4h bindkey z4h-cd-up      Shift+Up     # cd into the parent directory
-  z4h bindkey z4h-cd-down    Shift+Down   # cd into a child directory
-  zstyle ':z4h:*' fzf-bindings ctrl-k:up
-  # zstyle ':z4h:fzf-complete' fzf-bindings tab:repeat
-  zstyle ':z4h:fzf-complete' recurse-dirs yes
-  zstyle ':z4h:fzf-complete' fzf-bindings tab:repeat ctrl-k:up
-  autoload -Uz zmv
-  # Define functions and completions.
-  function md() { [[ $# == 1 ]] && mkdir -p -- "$1" && cd -- "$1" }
-  compdef _directories md
-  # Define named directories: ~w <=> Windows home directory on WSL.
-  [[ -z $z4h_win_home ]] || hash -d w=$z4h_win_home
-  # Define some alias
-  alias tree='tree -a -I .git'
-  alias ls="${aliases[ls]:-ls} -A"
-  # Set shell options: http://zsh.sourceforge.net/Doc/Release/Options.html.
-  setopt glob_dots     # no special treatment for file names with a leading dot
-  setopt no_auto_menu  # require an extra TAB press to open the completion menu
-}
+# Define functions and completions.
+function md() { [[ $# == 1 ]] && mkdir -p -- "$1" && cd -- "$1" }
+
+# Main
 
 # @PATH
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -126,23 +110,17 @@ fi
 
 # @Prompt And Framework
 if [[ $TERM_PROGRAM != "WarpTerminal" ]]; then
-  # zsh4humans_init
-  zsh4humans_conf
-  zsh4humans_specify
-  # cli_integration
-  # zinit_initial
-else
-  # @Warp Terminal
-  if check_cli zoxide; then
-    eval "$(zoxide init --cmd cd zsh)"
-  fi
+  zimfw_init
+  setopt rcs
 fi
 
 # @Env
-export EDITOR="nvim"
+[[ -z "$EDITOR" || "$EDITOR" != "code" ]] && export EDITOR="nvim"
 # Kitty ssh wrap
 [ ! -z "$KITTY_PUBLIC_KEY" ] && alias ssh="kitten ssh"
+
 command -v lazygit > /dev/null 2>&1 && alias lg="lazygit"
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	## MacOS
 	### env
