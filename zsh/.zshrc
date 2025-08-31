@@ -229,3 +229,15 @@ function cpp_test() {
   g++ "${FLAGS[@]}" "$FILE_NAME" -o a.out && ./a.out
 }
 
+function cdf() {
+  check_cli fzf || (echo "can not find fzf" && return 1)
+  local query="$1"
+  local find_cmd
+  if check_cli fd; then
+    find_cmd="fd -t d -H --color=never . ./"
+  else
+    find_cmd="find . -type d -not -path "." 2>/dev/null"
+  fi
+  cd $(eval "$find_cmd" | fzf --select-1 --exit-0 --query="$query") 
+}
+
