@@ -21,6 +21,10 @@ zmodule utility
 
 zmodule fzf
 
+zmodule exa
+
+zmodule kiesman99/zim-zoxide
+
 #
 # Prompt
 #

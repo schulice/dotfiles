@@ -19,7 +19,7 @@ function check_cli() {
 
 # @Previous Funcion
 function cli_integration() {
-  check_cli "fd" && export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
+  # check_cli "fd" && export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
   check_cli "fzf" && eval "$(fzf --zsh)"
   check_cli "zoxide" && eval "$(zoxide init --cmd cd zsh)"
   check_cli "direnv" && eval "$(direnv hook zsh)"
@@ -98,13 +98,15 @@ function md() { [[ $# == 1 ]] && mkdir -p -- "$1" && cd -- "$1" }
 # @PATH
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PNPM_HOME="$HOME/Library/pnpm"
-	[ -f "/opt/homebrew/bin/brew" ] && eval "$(/opt/homebrew/bin/brew shellenv)"
-	[ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env" # ghcup-env
+  local homebrew_prefix="/opt/linuxbrew"
+  [ -f "${homebrew_prefix}/bin/brew" ] && eval "$(${homebrew_prefix}/bin/brew shellenv)"
+  [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env" # ghcup-env
   path_push_front "/opt/homebrew/opt/libpq/bin" # pq
   path_push_front "/opt/homebrew/opt/riscv-gnu-toolchain/bin" # riscv
   path_push_front "/opt/homebrew/opt/binutils/bin"
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-
+  # local homebrew_prefix="/home/linuxbrew/.linuxbrew"
+  # [ -f "${homebrew_prefix}/bin/brew" ] && eval "$(${homebrew_prefix}/bin/brew shellenv)"
 else
 fi
 
@@ -118,8 +120,8 @@ fi
 [[ -z "$EDITOR" || "$EDITOR" != "code" ]] && export EDITOR="nvim"
 # Kitty ssh wrap
 [ ! -z "$KITTY_PUBLIC_KEY" ] && alias ssh="kitten ssh"
-
 command -v lazygit > /dev/null 2>&1 && alias lg="lazygit"
+
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	## MacOS
@@ -144,7 +146,6 @@ fi
 [ -d "$HOME/go/bin" ] && path_push_front "$HOME/go/bin"
 [ -d "$HOME/.cargo/bin" ] && path_push_front "$HOME/.cargo/bin"
 [ -d "$HOME/.local/bin" ] && path_push_front "$HOME/.local/bin"
-
 # local env
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
@@ -230,10 +231,10 @@ function cpp_test() {
 }
 
 function cdf() {
-  check_cli fzf || (echo "can not find fzf" && return 1)
+  command -v fzf > /dev/null 2>&1 || (echo "can not find fzf" && return 1)
   local query="$1"
   local find_cmd
-  if check_cli fd; then
+  if command -v fd > /dev/null 2>&1; then
     find_cmd="fd -t d -H --color=never . ./"
   else
     find_cmd="find . -type d -not -path "." 2>/dev/null"
