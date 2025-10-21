@@ -98,7 +98,7 @@ function md() { [[ $# == 1 ]] && mkdir -p -- "$1" && cd -- "$1" }
 # @PATH
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PNPM_HOME="$HOME/Library/pnpm"
-  local homebrew_prefix="/opt/linuxbrew"
+  local homebrew_prefix="/opt/homebrew"
   [ -f "${homebrew_prefix}/bin/brew" ] && eval "$(${homebrew_prefix}/bin/brew shellenv)"
   [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env" # ghcup-env
   path_push_front "/opt/homebrew/opt/libpq/bin" # pq
