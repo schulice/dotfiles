@@ -104,6 +104,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   path_push_front "/opt/homebrew/opt/libpq/bin" # pq
   path_push_front "/opt/homebrew/opt/riscv-gnu-toolchain/bin" # riscv
   path_push_front "/opt/homebrew/opt/binutils/bin"
+  # bun
+  export BUN_INSTALL="$HOME/.bun"
+  # [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
+  export PATH="$BUN_INSTALL/bin:$PATH"
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
   # local homebrew_prefix="/home/linuxbrew/.linuxbrew"
   # [ -f "${homebrew_prefix}/bin/brew" ] && eval "$(${homebrew_prefix}/bin/brew shellenv)"
@@ -118,21 +122,55 @@ fi
 
 # @Env
 [[ -z "$EDITOR" || "$EDITOR" != "code" ]] && export EDITOR="nvim"
+function nvim-vscode() { NVIM_APPNAME="nvim-vscode" nvim "$@" }
 # Kitty ssh wrap
 [ ! -z "$KITTY_PUBLIC_KEY" ] && alias ssh="kitten ssh"
 command -v lazygit > /dev/null 2>&1 && alias lg="lazygit"
 
 
+function set_proxy_from_macos() {
+    local proxy_settings=$(scutil --proxy)
+    local http_enabled=$(echo "$proxy_settings" | awk '/HTTPEnable/ { print $3 }')
+    if [[ "$http_enabled" == "1" ]]; then
+        local http_host=$(echo "$proxy_settings" | awk '/HTTPProxy/ { print $3 }')
+        local http_port=$(echo "$proxy_settings" | awk '/HTTPPort/ { print $3 }')
+        export http_proxy="http://${http_host}:${http_port}"
+        export HTTP_PROXY="http://${http_host}:${http_port}"
+    fi
+    local https_enabled=$(echo "$proxy_settings" | awk '/HTTPSEnable/ { print $3 }')
+    if [[ "$https_enabled" == "1" ]]; then
+        local https_host=$(echo "$proxy_settings" | awk '/HTTPSProxy/ { print $3 }')
+        local https_port=$(echo "$proxy_settings" | awk '/HTTPSPort/ { print $3 }')
+        export https_proxy="http://${https_host}:${https_port}"
+        export HTTPS_PROXY="http://${https_host}:${https_port}"
+    fi
+    local socks_enabled=$(echo "$proxy_settings" | awk '/SOCKSEnable/ { print $3 }')
+    if [[ "$socks_enabled" == "1" ]]; then
+        local socks_host=$(echo "$proxy_settings" | awk '/SOCKSProxy/ { print $3 }')
+        local socks_port=$(echo "$proxy_settings" | awk '/SOCKSPort/ { print $3 }')
+        export all_proxy="socks5://${socks_host}:${socks_port}"
+        export ALL_PROXY="socks5://${socks_host}:${socks_port}"
+    fi
+    if [[ "$http_enabled" == "1" || "$https_enabled" == "1" || "$socks_enabled" == "1" ]]; then
+        export no_proxy="localhost,127.0.0.1,localaddress,.local,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12"
+        export NO_PROXY="$no_proxy"
+    fi
+}
+
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	## MacOS
 	### env
-	# for nvm
 	# alias ls="ls --color"
 	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
   alias em="emacsclient -t -a ''"
   function get_app_id() {
     osascript -e "id of app \"$1\""
   }
+  # SHOULD sudo
+  function zerotier-start() { sudo launchctl load /Library/LaunchDaemons/com.zerotier.one.plist }
+  function zerotier-stop() { sudo launchctl unload /Library/LaunchDaemons/com.zerotier.one.plist }
+  set_proxy_from_macos
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 	## Linux
 	# alias ls='ls --color'
@@ -196,10 +234,8 @@ function proxy-clash() {
   export HTTPS_PROXY="http://127.0.0.1:7897"
 }
 
-function proxy-stop() {
-  unset ALL_PROXY
-  unset HTTP_PROXY
-  unset HTTPS_PROXY
+function proxy-off() {
+  unset http_proxy HTTP_PROXY https_proxy HTTPS_PROXY all_proxy ALL_PROXY no_proxy NO_PROXY
 }
 
 # headless
@@ -242,3 +278,21 @@ function cdf() {
   cd $(eval "$find_cmd" | fzf --select-1 --exit-0 --query="$query") 
 }
 
+_opencode_yargs_completions()
+{
+  local reply
+  local si=$IFS
+  IFS=$'
+' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" opencode --get-yargs-completions "${words[@]}"))
+  IFS=$si
+  if [[ ${#reply} -gt 0 ]]; then
+    _describe 'values' reply
+  else
+    _default
+  fi
+}
+if [[ "'${zsh_eval_context[-1]}" == "loadautofunc" ]]; then
+  _opencode_yargs_completions "$@"
+else
+  compdef _opencode_yargs_completions opencode
+fi
