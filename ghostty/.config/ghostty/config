@@ -8,7 +8,7 @@ font-size = 15
 # theme = light:dayfox,dark:nightfox
 theme = light:AtomOneLight,dark:AtomOneDark
 
-command  =  ~/.config/ghostty/tmux.sh
+# command  =  ~/.config/ghostty/tmux.sh
 
 # Term
 term = xterm-256color
