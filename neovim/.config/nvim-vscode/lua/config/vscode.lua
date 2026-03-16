@@ -4,15 +4,47 @@ if not vim.g.vscode then
 end
 
 vim.notify = require("vscode").notify
-vim.opt.shortmess:append("asSScCAIWF")
-vim.opt.showmode = false
-vim.opt.report = 9999
-vim.opt.laststatus = 0
-vim.opt.showmode = false
+
+local original_notify = vim.notify
+vim.notify = require("vscode").notify(msg, log_level, opts)
+
+local notify_func = function(msg, log_level, opts)
+  local level = log_level or vim.log.levels.INFO
+  -- vim.log.levels for DEBUG=0, INFO=3, WARN=4, ERROR=5
+  if level >= vim.log.levels.ERROR then
+    require("vscode").notify(msg, log_level, opts)
+  end
+end
+
+vim.ui_attach(
+  vim.api.nvim_create_namespace("silent"),
+  { ext_messages = true },
+  function(event, kind, content, replace_last)
+    if event == "msg_show" then
+      if kind == "confirm" or kind == "confirm_sub" or kind == "return_prompt" then
+        return false
+      end
+      return true
+    end
+    if event == "msg_clear" then return true end
+    if event == "msg_showmode" then return true end
+    if event == "msg_showcmd" then return true end
+    if event == "msg_ruler" then return true end
+  end
+)
+-- vim.ui_detach(vim.api.nvim_get_namespaces()["silent"])
+
+-- vim.opt.shortmess = "filnxtToOFsScCAIWaq"
 vim.opt.cmdheight = 0
+vim.opt.showmode = false
 vim.opt.ruler = false
+vim.opt.report = 9999
+vim.opt.more = false
+vim.opt.showmode = false
+
+
 vim.opt.timeoutlen = 400
-vim.opt.cmdheight = 0
+
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
 local function map(mode, lhs, rhs, opts)
