@@ -45,11 +45,7 @@ opt.wrap = false
 opt.signcolumn = "yes"
 
 opt.list = true
-opt.listchars = {
-	tab = "» ",
-	trail = "·",
-	nbsp = "␣",
-}
+-- opt.listchars = { tab = "» ", trail = "·", nbsp = "␣", }
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
