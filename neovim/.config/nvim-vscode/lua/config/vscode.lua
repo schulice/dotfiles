@@ -43,7 +43,7 @@ vim.opt.more = false
 vim.opt.showmode = false
 
 vim.opt.timeoutlen = 400
-vim.opt.clipboard+=unnamedplus
+vim.opt.clipboard = "unnamedplus"
 
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
