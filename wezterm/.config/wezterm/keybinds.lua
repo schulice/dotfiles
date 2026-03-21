@@ -6,6 +6,11 @@ local M = {}
 function M.apply_to_config(config)
 	config.keys = {
 		{
+			key = "w",
+			mods = "CMD",
+			action = act.CloseCurrentPane({ confirm = true }),
+		},
+		{
 			key = "d",
 			mods = "CMD",
 			action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
