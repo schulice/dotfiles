@@ -6,6 +6,11 @@ local M = {}
 function M.apply_to_config(config)
 	config.keys = {
 		{
+			key = "u",
+			mods = "CMD|SHIFT",
+			action = wezterm.action.QuickSelect,
+		},
+		{
 			key = "w",
 			mods = "CMD",
 			action = act.CloseCurrentPane({ confirm = true }),
