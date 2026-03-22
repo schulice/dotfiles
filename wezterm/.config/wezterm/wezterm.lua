@@ -10,6 +10,9 @@ keybinds.apply_to_config(config)
 
 config.enable_tab_bar = true
 config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
+config.native_macos_fullscreen_mode = true
+-- config.window_close_confirmation = "NeverPrompt"
+-- config.hide_tab_bar_if_only_one_tab = true
 
 config.font = wezterm.font("JetBrains Maple Mono")
 config.font_size = 14
