@@ -275,6 +275,10 @@ function cdf() {
   [[ -n $target ]] && cd $target
 }
 
+scrcpy_audio() {
+  scrcpy --no-window --audio-buffer=200 --audio-codec=raw
+}
+
 _opencode_yargs_completions()
 {
   local reply
