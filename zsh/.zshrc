@@ -26,9 +26,6 @@ function cli_integration() {
 }
 
 function zimfw_init() {
-  if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-  fi
   # Remove older command from the history if a duplicate is to be added.
   setopt HIST_IGNORE_ALL_DUPS
   # Set editor default keymap to emacs (`-e`) or vi (`-v`)
@@ -87,7 +84,6 @@ function zimfw_init() {
   for key ('k') bindkey -M vicmd ${key} history-substring-search-up
   for key ('j') bindkey -M vicmd ${key} history-substring-search-down
   unset key
-  [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 }
 
 # Define functions and completions.
@@ -275,7 +271,8 @@ function cdf() {
   else
     find_cmd="find . -type d -not -path "." 2>/dev/null"
   fi
-  cd $(eval "$find_cmd" | fzf --select-1 --exit-0 --query="$query") 
+  local target=$(eval "$find_cmd" | fzf --select-1 --exit-0 --query="$query")
+  [[ -n $target ]] && cd $target
 }
 
 _opencode_yargs_completions()

@@ -11,7 +11,7 @@
 # Sets sane Zsh built-in environment options.
 zmodule environment
 # Provides handy git aliases and functions.
-zmodule git
+# zmodule git
 # Applies correct bindkeys for input events.
 zmodule input
 # Sets a custom terminal title.
@@ -21,7 +21,7 @@ zmodule utility
 
 zmodule fzf
 
-zmodule exa
+# zmodule exa
 
 zmodule kiesman99/zim-zoxide
 
@@ -29,7 +29,8 @@ zmodule kiesman99/zim-zoxide
 # Prompt
 #
 
-zmodule romkatv/powerlevel10k
+# zmodule romkatv/powerlevel10k
+zmodule agkozak/agkozak-zsh-prompt
 
 #
 # Completion
