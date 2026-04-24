@@ -224,15 +224,38 @@ function tmux-into() {
   fi
 }
 
-function proxy-clash() {
-  export ALL_PROXY="http://127.0.0.1:7897"
-  export HTTP_PROXY="http://127.0.0.1:7897"
-  export HTTPS_PROXY="http://127.0.0.1:7897"
+function proxy-on() {
+  local port="${1:-7890}"
+  if timeout 1 bash -c "</dev/tcp/127.0.0.1/${port}" 2>/dev/null; then
+      export http_proxy="http://127.0.0.1:${port}"
+      export https_proxy="http://127.0.0.1:${port}"
+      export HTTP_PROXY="$http_proxy"
+      export HTTPS_PROXY="$https_proxy"
+      unset all_proxy ALL_PROXY
+  else
+      echo "proxy port ${port} not available"
+      return 1
+  fi
+}
+
+function proxy-set() {
+  local port="${1:-7890}"
+  export http_proxy="http://127.0.0.1:${port}"
+  export https_proxy="http://127.0.0.1:${port}"
+  export HTTP_PROXY="$http_proxy"
+  export HTTPS_PROXY="$https_proxy"
+  unset all_proxy ALL_PROXY
+  echo "set proxy port ${port}"
 }
 
 function proxy-off() {
   unset http_proxy HTTP_PROXY https_proxy HTTPS_PROXY all_proxy ALL_PROXY no_proxy NO_PROXY
 }
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  proxy-on
+fi
+
 
 # headless
 function nvim-server() {
