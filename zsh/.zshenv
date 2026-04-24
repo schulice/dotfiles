@@ -10,3 +10,5 @@ fi
 export AGKOZAK_PROMPT_DIRTRIM=0
 # export AGKOZAK_FORCE_ASYNC_METHOD="usr1" # subst-async zsh-async usr1 none
 export AGKOZAK_LEFT_PROMPT_ONLY=1
+# export AGKOZAK_COLORS_BRANCH_STATUS=default
+export AGKOZAK_COLORS_CMD_EXEC_TIME=yellow
