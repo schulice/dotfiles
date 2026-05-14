@@ -1,28 +1,27 @@
 # ZSH profile
 
 #@Config Fuction
-function path_push_front() {
-  case ":$PATH:" in
-    *":$PNPM_HOME:"*) ;;
-    *) export PATH="$1:$PATH" ;;
-  esac
-}
-
-function check_cli() {
-  local cli_name="$1"
-  if command -v "$cli_name" > /dev/null 2>&1; then
-    return 0
-  else
-    return 1
-  fi
+function clean-path() {
+    local input="${1:-$PATH}"
+    local -A seen=()
+    local -a cleaned=()
+    local p
+    while IFS= read -r -d ':' p || [[ -n "$p" ]]; do
+        [[ -z "$p" ]] && continue
+        if [[ -z "${seen[$p]}" ]]; then
+            seen[$p]=1
+            cleaned+=("$p")
+        fi
+    done <<< "${input}:"
+    (IFS=':'; echo "${cleaned[*]}")
 }
 
 # @Previous Funcion
 function cli_integration() {
-  # check_cli "fd" && export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
-  check_cli "fzf" && eval "$(fzf --zsh)"
-  check_cli "zoxide" && eval "$(zoxide init --cmd cd zsh)"
-  check_cli "direnv" && eval "$(direnv hook zsh)"
+  # type "fd" $>/dev/null && export FZF_DEFAULT_COMMAND='fd --hidden --no-ignore'
+  type fzf &>/dev/null && eval "$(fzf --zsh)"
+  type zoxide &>/dev/null && eval "$(zoxide init --cmd cd zsh)"
+  type direnv &> /dev/null && eval "$(direnv hook zsh)"
 }
 
 function zimfw_init() {
@@ -91,24 +90,16 @@ function md() { [[ $# == 1 ]] && mkdir -p -- "$1" && cd -- "$1" }
 
 # Main
 
-# @PATH
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  export PNPM_HOME="$HOME/Library/pnpm"
-  local homebrew_prefix="/opt/homebrew"
-  [ -f "${homebrew_prefix}/bin/brew" ] && eval "$(${homebrew_prefix}/bin/brew shellenv)"
-  [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env" # ghcup-env
-  path_push_front "/opt/homebrew/opt/libpq/bin" # pq
-  path_push_front "/opt/homebrew/opt/riscv-gnu-toolchain/bin" # riscv
-  path_push_front "/opt/homebrew/opt/binutils/bin"
-  # bun
-  export BUN_INSTALL="$HOME/.bun"
-  # [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
-  export PATH="$BUN_INSTALL/bin:$PATH"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  # local homebrew_prefix="/home/linuxbrew/.linuxbrew"
-  # [ -f "${homebrew_prefix}/bin/brew" ] && eval "$(${homebrew_prefix}/bin/brew shellenv)"
-else
-fi
+function init-micromanba() {
+  local target="$HOME/.local"
+  case "${OSTYPE}:$(uname -m)" in
+    linux-gnu*:x86_64|linux-gnu*:amd64)   sys_version="linux-64" ;;
+    linux-gnu*:aarch64|linux-gnu*:arm64)  sys_version="linux-aarch64" ;;
+    darwin*:arm64)                        sys_version="osx-64" ;;
+    *)                                    return ;;
+  esac
+  curl -Ls https://micro.mamba.pm/api/micromamba/${sys_version}/latest | tar -C $target -xvj bin/micromamba
+}
 
 # @Prompt And Framework
 if [[ $TERM_PROGRAM != "WarpTerminal" ]]; then
@@ -122,6 +113,7 @@ function nvim-vscode() { NVIM_APPNAME="nvim-vscode" nvim "$@" }
 # Kitty ssh wrap
 [ ! -z "$KITTY_PUBLIC_KEY" ] && alias ssh="kitten ssh"
 command -v lazygit > /dev/null 2>&1 && alias lg="lazygit"
+[[ -f "$HOME/.gitconfig_custom" ]] && export GIT_CONFIG_GLOBAL="$HOME/.gitconfig_custom"
 
 
 function set_proxy_from_macos() {
@@ -155,31 +147,17 @@ function set_proxy_from_macos() {
 
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-	## MacOS
-	### env
-	# alias ls="ls --color"
-	alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
-  alias em="emacsclient -t -a ''"
-  function get_app_id() {
-    osascript -e "id of app \"$1\""
-  }
-  # SHOULD sudo
+  alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+  type emacsclient $>/dev/null && alias em="emacsclient -t -a ''"
+  function get_app_id() { osascript -e "id of app \"$1\"" }
   function zerotier-start() { sudo launchctl load /Library/LaunchDaemons/com.zerotier.one.plist }
   function zerotier-stop() { sudo launchctl unload /Library/LaunchDaemons/com.zerotier.one.plist }
   set_proxy_from_macos
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-	## Linux
-	# alias ls='ls --color'
-	# PATH="$HOME/opt/qemu-7.2.12/bin:$PATH"
 else
-## other system
 fi
 
 # toolchain binary
-[ -n "${PNPM_HOME-}" -a -d "$PNPM_HOME" ] && path_push_front "$PNPM_HOME"
-[ -d "$HOME/go/bin" ] && path_push_front "$HOME/go/bin"
-[ -d "$HOME/.cargo/bin" ] && path_push_front "$HOME/.cargo/bin"
-[ -d "$HOME/.local/bin" ] && path_push_front "$HOME/.local/bin"
 # local env
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
@@ -288,14 +266,17 @@ function cpp_test() {
 function cdf() {
   command -v fzf > /dev/null 2>&1 || (echo "can not find fzf" && return 1)
   local query="$1"
-  local find_cmd
   if command -v fd > /dev/null 2>&1; then
     find_cmd="fd -t d -H --color=never . ./"
   else
     find_cmd="find . -type d -not -path "." 2>/dev/null"
   fi
   local target=$(eval "$find_cmd" | fzf --select-1 --exit-0 --query="$query")
-  [[ -n $target ]] && cd $target
+  local cd_cmd="cd"
+  if type -v z &>/dev/null; then
+    cd_cmd="z"
+  fi
+  [[ -n $target ]] && $cd_cmd $target
 }
 
 scrcpy_audio() {
