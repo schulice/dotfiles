@@ -51,6 +51,8 @@ local function map(mode, lhs, rhs, opts)
 	vim.keymap.set(mode, lhs, rhs, opts or { silent = true })
 end
 
+map("n", "<Leader><Leader>", "<Cmd>nohl<CR>")
+
 map("n", "<Leader>q", function() require("vscode").action("workbench.action.closeWindow") end)
 map("n", "<Leader>w", function() require("vscode").action("workbench.action.files.save") end)
 map("n", "<Leader>n", function() require("vscode").action("welcome.showNewFileEntries") end)
