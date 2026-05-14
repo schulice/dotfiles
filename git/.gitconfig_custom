@@ -1,0 +1,46 @@
+[include]
+    path = ~/.gitconfig
+
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    theme = base16-256
+[merge]
+    conflictStyle = diff3
+[diff]
+    colorMoved = default
+
+[pretty]
+    slog = format:%C(yellow)%h %Cred%as %Cblue%an%Cgreen%d %Creset%s
+    llog = format:%C(yellow)%H %Cred%as %Cblue%an%Cgreen%d %Creset%s
+    bw = format:%h | %as | %>(20,trunc)%d%x09%s
+
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = !git -C $(git rev-parse --show-toplevel) status
+    ; lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    undo = reset --soft HEAD^
+    ss = !git -C $(git rev-parse --show-toplevel) status -s
+    lga = log --graph --oneline --decorate --all
+    pullr = pull --rebase
+    last = log -1 HEAD
+    unstage = reset HEAD --
+
+    l1 = log -1 --pretty=slog
+    l5 = log -5 --pretty=slog 
+    slog = log --pretty=slog
+    slogbw = log --pretty=bw
+    glog = log --graph --pretty=slog 
+    outgoing = log --pretty=slog @{u}..
+    logg = log --graph --pretty=slog --abbrev-commit
+[pull]
+    rebase = true
+[diff]
+    ignoreSubmodules = all
+[rebase]
+    autoStash = true
